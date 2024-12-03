@@ -40,6 +40,13 @@ if min(differences) > 0:
 return False
 ```
 
+Star 2: everything prepared well for it!
+
+### Day 3 - Mull It Over
+
+I needed to refresh in Regex, as each year... Despite this, we are still in a day when I get the right result at the
+first time.
+
 ## Summary
 
 **TODO UPDATE!**

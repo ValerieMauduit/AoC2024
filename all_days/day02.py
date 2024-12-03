@@ -51,7 +51,7 @@ def run(data_dir, star):
 
     if star == 1:  # The final answer is: 202
         solution = count_safe(data)
-    elif star == 2:  # The final answer is:
+    elif star == 2:  # The final answer is: 271
         solution = count_safe(data, with_tolerance=True)
     else:
         raise Exception('Star number must be either 1 or 2.')
