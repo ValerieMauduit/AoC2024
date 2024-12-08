@@ -33,7 +33,7 @@ class AocMap:
 
     @classmethod
     def from_coord(cls, coordinates, x_min=None, y_min=None, x_max=None, y_max=None):
-        # Constructor - Create a map made of '.' for the eempty places and '#' for all the coordinates that are entered
+        # Constructor - Create a map made of '.' for the empty places and '#' for all the coordinates that are entered
         # in the parameters.
         # Optional inputs: x_min, x_max, y_min, y_max, that will define the size of the map + the origin.
         if x_min is None:
@@ -137,6 +137,17 @@ class AocMap:
                        range(max([self.origin[1], self.y - 1]), min([self.y + 2, self.height + self.origin[1]]))
                        if y != self.y
                    ]
+
+    def get_neighbour(self, direction):
+        directions = {
+            'U': [0, -1], 'D': [0, 1], 'L': [-1, 0], 'R': [1, 0],
+            'N': [0, -1], 'S': [0, 1], 'W': [-1, 0], 'E': [1, 0]
+        }
+        x_moved, y_moved = self.x + directions[direction][0], self.y + directions[direction][1]
+        if (min([max([self.origin[0], x_moved]), self.origin[0] + self.width - 1]) != x_moved) | (
+                min([max([self.origin[1], y_moved]), self.origin[1] + self.height - 1]) != y_moved):
+            return 'Exit'
+        return self.map[y_moved][x_moved]
 
     def get_neighbours_coordinates(self, diagonals=True):
         # Method to get the coordinates for all the neighbours of the position.
