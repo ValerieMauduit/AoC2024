@@ -17,7 +17,7 @@ def test_sets():
                 '............', '............', '........A...', '.........A..', '............', '............'
             ],
             'expected1': 14,
-            'expected2': []
+            'expected2': 34
         },
     ]
 
@@ -33,7 +33,8 @@ def test_first_star(test_data, expected):
 
 
 def test_second_star(test_data, expected):
-    solution = day00.my_func(test_data)
+    test_data = [[x for x in line] for line in test_data]
+    solution = day08.count_all_resonnant_points(test_data)
     if solution != expected:
         print("Your output is:")
         print(solution)
