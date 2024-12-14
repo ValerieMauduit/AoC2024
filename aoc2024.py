@@ -2,7 +2,7 @@
 import argparse
 
 from all_days import (
-    day01, day02, day03, day04, day05, day06, day07, day08
+    day01, day02, day03, day04, day05, day06, day07, day08, day09, day10, day11, day12, day13, day14
 )
 
 
@@ -29,18 +29,18 @@ def main():
         day07.run(args.dir, args.star)
     elif args.day == 8:
         day08.run(args.dir, args.star)
-    # elif args.day == 9:
-    #     day09.run(args.dir, args.star)
-    # elif args.day == 10:
-    #     day10.run(args.dir, args.star)
-    # elif args.day == 11:
-    #     day11.run(args.dir, args.star)
-    # elif args.day == 12:
-    #     day12.run(args.dir, args.star)
-    # elif args.day == 13:
-    #     day13.run(args.dir, args.star)
-    # elif args.day == 14:
-    #     day14.run(args.dir, args.star)
+    elif args.day == 9:
+        day09.run(args.dir, args.star)
+    elif args.day == 10:
+        day10.run(args.dir, args.star)
+    elif args.day == 11:
+        day11.run(args.dir, args.star)
+    elif args.day == 12:
+        day12.run(args.dir, args.star)
+    elif args.day == 13:
+        day13.run(args.dir, args.star)
+    elif args.day == 14:
+        day14.run(args.dir, args.star)
     # elif args.day == 15:
     #     day15.run(args.dir, args.star)
     # elif args.day == 16:
