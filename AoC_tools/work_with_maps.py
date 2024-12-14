@@ -28,7 +28,7 @@ class AocMap:
     @classmethod
     def empty_from_size(cls, width, height):
         # Constructor - Create an empty map, full of '.' defining only its width and height
-        data = ['.' * width for line in range(height)]
+        data = ['.' * width for _ in range(height)]
         return cls(data)
 
     @classmethod
@@ -217,21 +217,21 @@ class AocMap:
     def add_empty_lines(self, count, top=True):
         if count > 0:
             if top:
-                self.map = [['.' for n in range(self.width)] for p in range(count)] + self.map
+                self.map = [['.' for _ in range(self.width)] for _ in range(count)] + self.map
                 self.height += count
                 self.origin = [self.origin[0], self.origin[1] - count]
             else:
-                self.map = self.map + [['.' for n in range(self.width)] for p in range(count)]
+                self.map = self.map + [['.' for _ in range(self.width)] for _ in range(count)]
                 self.height += count
 
     def add_empty_columns(self, count, left=True):
         if count > 0:
             if left:
-                self.map = [['.' for n in range(count)] + line for line in self.map]
+                self.map = [['.' for _ in range(count)] + line for line in self.map]
                 self.width += count
                 self.origin = [self.origin[0] - count, self.origin[1]]
             else:
-                self.map = [line + ['.' for n in range(count)] for line in self.map]
+                self.map = [line + ['.' for _ in range(count)] for line in self.map]
                 self.width += count
 
     def create_submap(self, x_min=None, x_max=None, y_min=None, y_max=None):
