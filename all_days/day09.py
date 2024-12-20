@@ -52,28 +52,32 @@ def check_sum(data):
 def check_sum_no_fragmentation(data):
     blocks = data
     ids = [-1 if i % 2 == 1 else int(i / 2) for i in range(len(blocks))]
+    print(f'Count of files = {max(ids)}')
     # Compact the blocks
-    for file_id in range(max(ids), 0, -1):
-        file_initial_loc = ids.index(file_id)
-        loc, moved = 1, False
-        while (loc < file_initial_loc) & (not moved):
-            if (ids[loc] == -1) & (blocks[loc] >= blocks[file_initial_loc]):
-                if blocks[loc] == blocks[file_initial_loc]:
-                    ids[loc] = file_id
-                    blocks, ids = blocks[:-2], ids[:-2]
-                else:
-                    ids = ids[:loc] + [file_id] + ids[loc:-2]
-                    blocks = (
-                            blocks[:loc]
-                            + [blocks[file_initial_loc], blocks[loc] - blocks[file_initial_loc]]
-                            + blocks[(loc + 1): -2]
-                    )
-                moved = True
+    for f in range(max(ids), 0, -1):
+        if (f % 100 == 0):
+            print(f)
+        pos_f = ids.index(f)
+        block_f = blocks[pos_f]
+        p, free_block = 0, False
+        while (not free_block) & (p < pos_f):
+            if (ids[p] == -1) & (blocks[p] >= block_f):
+                free_block = True
+                blocks = blocks[:p] + [block_f, blocks[p] - block_f] + blocks[(p + 1):]
+                ids = ids[:p] + [f, -1] + ids[(p + 1):(pos_f)] + [-1] + ids[(pos_f + 1):]
+                # group contiguous -1
+                p2 = 1
+                while p2 < len(ids):
+                    if ids[(p2 - 1):(p2 + 1)] == [-1, -1]:
+                        ids = ids[:(p2 - 1)] + ids[p2:]
+                        blocks = blocks[:(p2 - 1)] + [sum(blocks[(p2 - 1): (p2 + 1)])] + blocks[(p2 + 1):]
+                    else:
+                        p2 += 1
             else:
-                loc += 1
+                p += 1
     # Compute the checksum
     positions = list(np.cumsum(blocks))
-    return sum([ids[i] * sum(range(max(0, positions[i - 1]), positions[i])) for i in range(len(blocks))])
+    return sum([max(ids[i], 0) * sum(range(max(0, positions[i - 1]), positions[i])) for i in range(len(blocks))])
 
 
 def run(data_dir, star):
@@ -82,8 +86,8 @@ def run(data_dir, star):
 
     if star == 1:  # The final answer is: 6346871685398
         solution = check_sum(data)
-    elif star == 2:  # The final answer is:
-        solution = my_func(data)
+    elif star == 2:  # The final answer is: 6373055193464
+        solution = check_sum_no_fragmentation(data)
     else:
         raise Exception('Star number must be either 1 or 2.')
 
