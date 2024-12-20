@@ -88,7 +88,10 @@ class AocMap:
 
     def move(self, displacements):
         # Method to change the position, by indicating many displacements in a dict
-        opposites = {'D': 'U', 'U': 'D', 'R': 'L', 'L': 'R'}
+        opposites = {
+            'D': 'U', 'U': 'D', 'R': 'L', 'L': 'R',
+            'S': 'N', 'N': 'S', 'E': 'W', 'W': 'E'
+        }
         for direction in displacements:
             if displacements[direction] >= 0:
                 real_direction, value = direction, displacements[direction]
@@ -100,6 +103,10 @@ class AocMap:
     def get_point(self, position):
         # Method to get the value in the map for a specific set of coordinates [x, y]
         return self.map[position[1] - self.origin[1]][position[0] - self.origin[0]]
+
+    def get_points(self, positions):
+        # Method to get the value in the map for multiple points
+        return [self.get_point(position) for position in positions]
 
     def set_point(self, position, marker='#'):
         # Method to change the map on a specific set of coordinates [x, y]
@@ -115,6 +122,34 @@ class AocMap:
         else:
             for n in range(len(coordinates)):
                 self.set_point(coordinates[n], markers[n])
+
+    def get_line(self, direction):
+        # Method to get the markers of all a line, from the position, in the given direction
+        if direction in ['E', 'R']:
+            positions = [[v, self.get_position()[1]] for v in range(self.get_position()[0] + 1, self.width)]
+        elif direction in ['W', 'L']:
+            positions = [[v, self.get_position()[1]] for v in range(self.get_position()[0] - 1, -1, -1)]
+        elif direction in ['U', 'N']:
+            positions = [[self.get_position()[0], v] for v in range(self.get_position()[1] - 1, -1, -1)]
+        elif direction in ['D', 'S']:
+            positions = [[self.get_position()[0], v] for v in range(self.get_position()[1] + 1, self.height)]
+        else:
+            raise Exception("Direction not coded")
+        return [self.get_point(pos) for pos in positions]
+
+    def get_line_positions(self, direction):
+        # Method to get the coords of all a line, from the position, in the given direction
+        if direction in ['E', 'R']:
+            positions = [[v, self.get_position()[1]] for v in range(self.get_position()[0] + 1, self.width)]
+        elif direction in ['W', 'L']:
+            positions = [[v, self.get_position()[1]] for v in range(self.get_position()[0] - 1, -1, -1)]
+        elif direction in ['U', 'N']:
+            positions = [[self.get_position()[0], v] for v in range(self.get_position()[1] - 1, -1, -1)]
+        elif direction in ['D', 'S']:
+            positions = [[self.get_position()[0], v] for v in range(self.get_position()[1] + 1, self.height)]
+        else:
+            raise Exception("Direction not coded")
+        return positions
 
     def get_neighbours(self, diagonals=True):
         # Method to get the values of the map for all the neighbours of the position.
@@ -314,3 +349,22 @@ class AocMap:
             self.y += glued.y
         else:
             raise Exception("The direction must be one of the following: R, L, U, D.")
+
+    def get_paths(self, coords, exit_position = None, path=None):
+        if not path:
+            path = [coords]
+        self.set_position(coords)
+        neighbours = self.get_neighbours_coordinates(diagonals=False)
+        accessible_neighbours = [n for n in neighbours if (self.get_point(n) != '#') & (n not in path)]
+        if accessible_neighbours:
+            paths = []
+            for n in accessible_neighbours:
+                if exit_position & (n == exit_position):
+                    paths += [[path + [n]]]
+                else:
+                    paths += self.get_paths(n, path + [n])
+            return paths
+        if ((exit_position is not None) & (path[-1] == exit_position)) | (exit_position is None):
+            return [path]
+        else:
+            return []

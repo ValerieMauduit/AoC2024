@@ -23,25 +23,36 @@ from AoC_tools.read_data import read_data
 from AoC_tools.work_with_maps import AocMap
 
 
-def count_paths(topographic_map):
+def count_paths(topographic_map, with_variants=False):
     count = 0
     for y in range(topographic_map.height):
         for x in range(topographic_map.width):
             if topographic_map.get_point([x, y]) == 0:
-                input([x, y])
-                print(f'   {get_point_score([x, y], topographic_map)}')
-                count += get_point_score([x, y], topographic_map)
+                if with_variants:
+                    count += get_point_score([x, y], topographic_map)
+                else:
+                    count += len(get_point_nines([x, y], topographic_map))
     return count
 
 
-def get_point_score(point, topographic_map, value=0):
-    print(f"{'.' * value * 2}{point} - Value {value}")
+def get_point_nines(point, topographic_map, nines=None, value=0):
+    if nines is None:
+        nines = []
     if value == 9:
-        print('Stop on success')
+        nines += [f'{point[0]} - {point[1]}']
+        return list(set(nines))
+    topographic_map.set_position(point)
+    for neighbour in topographic_map.get_neighbours_coordinates(diagonals=False):
+        if topographic_map.get_point(neighbour) == value + 1:
+            nines += get_point_nines(neighbour, topographic_map, nines, value=value + 1)
+    return list(set(nines))
+
+
+def get_point_score(point, topographic_map, value=0):
+    if value == 9:
         return 1
     topographic_map.set_position(point)
     if (value + 1) not in topographic_map.get_neighbours(diagonals=False):
-        print('Stop on failure')
         return 0
     return sum([
         get_point_score(neighbour, topographic_map, value=value + 1)
@@ -50,29 +61,14 @@ def get_point_score(point, topographic_map, value=0):
     ])
 
 
-def get_point_paths(points, topographic_map, value=0):
-    if value == 9:
-        return points
-    for point in points:
-        topographic_map.set_position(point)
-        if (value + 1) not in topographic_map.get_neighbours(diagonals=False):
-            return []
-        duplicated_neighbours = [
-            get_point_paths(neighbour, topographic_map, value=value + 1)
-            for neighbour in topographic_map.get_neighbours_coordinates(diagonals=False)
-            if topographic_map.get_point(neighbour) == value + 1
-        ]
-        return [list(tupl_coord) for tupl_coord in {tuple(item) for item in duplicated_neighbours }]
-
-
 def run(data_dir, star):
-    data = read_data(f'{data_dir}/input-day10.txt')
+    data = read_data(f'{data_dir}/input-day10.txt', numbers=False)
     topographic_map = AocMap(data, numbers=True)
 
-    if star == 1:  # The final answer is:
+    if star == 1:  # The final answer is: 629
         solution = count_paths(topographic_map)
     elif star == 2:  # The final answer is:
-        solution = 42  # my_func(data)
+        solution = count_paths(topographic_map, with_variants=True)
     else:
         raise Exception('Star number must be either 1 or 2.')
 
