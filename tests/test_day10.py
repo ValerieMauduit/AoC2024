@@ -18,7 +18,7 @@ def test_sets():
                 [4, 5, 6, 7, 8, 9, 0, 3], [3, 2, 0, 1, 9, 0, 1, 2], [0, 1, 3, 2, 9, 8, 0, 1], [1, 0, 4, 5, 6, 7, 3, 2]
             ],
             'expected1': 36,
-            'expected2': []
+            'expected2': 81
         },
     ]
 
@@ -33,7 +33,7 @@ def test_first_star(test_data, expected):
 
 
 def test_second_star(test_data, expected):
-    solution = day10.my_func(test_data)
+    solution = day10.count_paths(AocMap(test_data, numbers=True), with_variants=True)
     if solution != expected:
         print("Your output is:")
         print(solution)
