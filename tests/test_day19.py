@@ -17,7 +17,7 @@ def test_sets():
                 'patterns': ['brwrr', 'bggr', 'gbbr', 'rrbgbr', 'ubwu', 'bwurrg', 'brgr', 'bbrgwb']
             },
             'expected1': 6,
-            'expected2': []
+            'expected2': 16
         },
     ]
 
@@ -32,7 +32,7 @@ def test_first_star(test_data, expected):
 
 
 def test_second_star(test_data, expected):
-    solution = day00.my_func(test_data)
+    solution = day19.my_func(test_data)
     if solution != expected:
         print("Your output is:")
         print(solution)

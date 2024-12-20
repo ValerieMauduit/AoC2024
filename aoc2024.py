@@ -3,7 +3,8 @@ import argparse
 
 from all_days import (
     day01, day02, day03, day04, day05, day06, day07, day08, day09, day10, day11, day12,
-    day13, day14, day15, day16, day17, day18, day19
+    day13, day14, day15, day16, day17, day18, day19, day20, day21, day22, day23, day24,
+    day25
 )
 
 
@@ -52,14 +53,18 @@ def main():
         day18.run(args.dir, args.star)
     elif args.day == 19:
         day19.run(args.dir, args.star)
-    # elif args.day == 20:
-    #     day20.run(args.dir, args.star)
-    # elif args.day == 21:
-    #     day21.run(args.dir, args.star)
-    # elif args.day == 23:
-    #     day23.run(args.dir, args.star)
-    # elif args.day == 24:
-    #     day24.run(args.dir, args.star)
+    elif args.day == 20:
+        day20.run(args.dir, args.star)
+    elif args.day == 21:
+        day21.run(args.dir, args.star)
+    elif args.day == 22:
+        day22.run(args.dir, args.star)
+    elif args.day == 23:
+        day23.run(args.dir, args.star)
+    elif args.day == 24:
+        day24.run(args.dir, args.star)
+    elif args.day == 25:
+        day25.run(args.dir, args.star)
     else:
         raise Exception("Day isn't already coded")
 

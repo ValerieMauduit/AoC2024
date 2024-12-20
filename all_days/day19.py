@@ -58,6 +58,19 @@ def count_possible_patterns(data):
     return count
 
 
+def count_all_possibilities_for_a_pattern(pattern, towels, minimum_towels=None):
+    # Pour chaque pattern, si on peut le faire :
+    # - on enlève une par une chaque serviette utilisée dans la décomposition : est-ce qu'on peut encore le faire avec
+    #   toutes les serviettes indispensables moins celle enlevée ?
+    # - si oui, on continue le process
+    # - normalement à la fin on a toutes les possibilités pour faire le pattern avec des serviettes indispensables
+    #
+    # Pour chaque décomposition, on regarde si on peut faire des assemblages
+    # - étage 1 : pour les serviettes non indispensables, c'est quoi leurs décompositions ?
+    # - étape 2 : recherche des décompositions serviettes et remplacements
+    return 42
+
+
 def run(data_dir, star):
     data = read_data(f'{data_dir}/input-day19.txt', numbers=False, by_block=True)
     data = {'towels': data[0][0].split(', '), 'patterns': data[1]}
