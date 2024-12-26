@@ -14,7 +14,7 @@ def test_sets():
             'number': 1,
             'input': ['029A', '980A', '179A', '456A', '379A'],
             'expected1': 126384,
-            'expected2': []
+            'expected2': 126384
         },
     ]
 
@@ -29,7 +29,7 @@ def test_first_star(test_data, expected):
 
 
 def test_second_star(test_data, expected):
-    solution = day21.long_chain(test_data)
+    solution = sum([int(k[:-1]) * v for k, v in day21.long_chain(test_data, 2).items()])
     if solution != expected:
         print("Your output is:")
         print(solution)

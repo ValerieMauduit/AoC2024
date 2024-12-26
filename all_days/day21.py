@@ -46,32 +46,32 @@ sys.path.append(parent_dir)
 
 MOVES_TO_DIGICOD = {
     '0': {
-        '0': 'A', '1': 'LUA', '2': 'UA', '3': 'RUA', '4': 'UULA', '5': 'UUA', '6': 'RUUA', '7': 'UUULA', '8': 'UUUA',
-        '9': 'RUUUA', 'A': 'RA'
+        '0': 'A', '1': 'LUA', '2': 'UA', '3': 'URA', '4': 'UULA', '5': 'UUA', '6': 'RUUA', '7': 'UUULA',
+        '8': 'UUUA', '9': 'RUUUA', 'A': 'RA'
     }, '1': {
-        '0': 'RDA', '1': 'A', '2': 'RA', '3': 'RRA', '4': 'UA', '5': 'RUA', '6': 'RRUA', '7': 'UUA', '8': 'RUUA',
-        '9': 'RRUUA', 'A': 'RRDA'
+        '0': 'RDA', '1': 'A', '2': 'RA', '3': 'RRA', '4': 'UA', '5': 'URA', '6': 'URRA', '7': 'UUA',
+        '8': 'RUUA', '9': 'RRUUA', 'A': 'RRDA'
     }, '2': {
         '0': 'DA', '1': 'LA', '2': 'A', '3': 'RA', '4': 'LUA', '5': 'UA', '6': 'URA', '7': 'LUUA', '8': 'UUA',
         '9': 'UURA', 'A': 'DRA'
     }, '3': {
-        '0': 'LDA', '1': 'LLA', '2': 'LA', '3': 'A', '4': 'LLUA', '5': 'LUA', '6': 'UA', '7': 'LLUUA', '8': 'LUUA',
-        '9': 'UUA', 'A': 'DA'
+        '0': 'LDA', '1': 'LLA', '2': 'LA', '3': 'A', '4': 'LLUA', '5': 'LUA', '6': 'UA', '7': 'LLUUA',
+        '8': 'LUUA', '9': 'UUA', 'A': 'DA'
     }, '4': {
-        '0': 'RDDA', '1': 'DA', '2': 'DRA', '3': 'DRRA', '4': 'A', '5': 'RA', '6': 'RRA', '7': 'UA', '8': 'RUA',
-        '9': 'RRUA', 'A': 'RRDDA'
+        '0': 'RDDA', '1': 'DA', '2': 'DRA', '3': 'DRRA', '4': 'A', '5': 'RA', '6': 'RRA', '7': 'UA',
+        '8': 'URA', '9': 'URRA', 'A': 'RRDDA'
     }, '5': {
         '0': 'DDA', '1': 'LDA', '2': 'DA', '3': 'DRA', '4': 'LA', '5': 'A', '6': 'RA', '7': 'LUA', '8': 'UA',
         '9': 'URA', 'A': 'DDRA'
     }, '6': {
-        '0': 'LDDA', '1': 'LLDA', '2': 'LDA', '3': 'DA', '4': 'LLA', '5': 'LA', '6': 'A', '7': 'LLUA', '8': 'LUA',
-        '9': 'UA', 'A': 'DDA'
+        '0': 'LDDA', '1': 'LLDA', '2': 'LDA', '3': 'DA', '4': 'LLA', '5': 'LA', '6': 'A', '7': 'LLUA',
+        '8': 'LUA', '9': 'UA', 'A': 'DDA'
     }, '7': {
-        '0': 'RDDDA', '1': 'DDA', '2': 'DDRA', '3': 'DDRRA', '4': 'DA', '5': 'DRA', '6': 'DRRA', '7': 'A', '8': 'RA',
-        '9': 'RRA', 'A': 'RRDDDA'
+        '0': 'RDDDA', '1': 'DDA', '2': 'DDRA', '3': 'DDRRA', '4': 'DA', '5': 'DRA', '6': 'DRRA', '7': 'A',
+        '8': 'RA', '9': 'RRA', 'A': 'RRDDDA'
     }, '8': {
-        '0': 'DDDA', '1': 'LDDA', '2': 'DDA', '3': 'DDRA', '4': 'LDA', '5': 'DA', '6': 'DRA', '7': 'LA', '8': 'A',
-        '9': 'RA', 'A': 'DDDRA'
+        '0': 'DDDA', '1': 'LDDA', '2': 'DDA', '3': 'DDRA', '4': 'LDA', '5': 'DA', '6': 'DRA', '7': 'LA',
+        '8': 'A', '9': 'RA', 'A': 'DDDRA'
     }, '9': {
         '0': 'LDDDA', '1': 'LLDDA', '2': 'LDDA', '3': 'DDA', '4': 'LLDA', '5': 'LDA', '6': 'DA', '7': 'LLA',
         '8': 'LA', '9': 'A', 'A': 'DDDA'
@@ -132,48 +132,44 @@ def complexity_sum(codes, robots=3):
     complexity = 0
     for code in codes:
         print(code)
-        complexity += [len(command_door(code, robots))] # int(code[:-1]) * len(command_door(code, robots))
+        complexity += int(code[:-1]) * len(command_door(code, robots))
     return complexity
 
 
-def long_chain(codes):
+def long_chain(codes, steps=25):
     # First define the possible results for 5 steps
-    next_move5 = {}
+    next_move = {}
     for code in set(
             [v for x in MOVES_TO_DIGICOD.values() for v in x.values()]
             + [v for x in MOVES_TO_KEYPAD.values() for v in x.values()]
     ):
-        initial_code = code
-        for count in range(5):
-            position = 'A'
-            new_code = ''
-            for x in code:
-                new_code += MOVES_TO_KEYPAD[position][x]
-                position = x
-            code = new_code
-        next_move5[initial_code] = [x + 'A' for x in code.split('A')][:-1]
+        position = 'A'
+        new_code = ''
+        for x in code:
+            new_code += MOVES_TO_KEYPAD[position][x]
+            position = x
+        next_move[code] = [x + 'A' for x in new_code.split('A')][:-1]
 
-    # Then use the 5 steps dict to do it 5 times on each door code
+    # Then run each robot n (steps) times
     robots = {}
     for code in codes:
+        print(code)
         robot = ''
         position = 'A'
         for v in code:
             move = MOVES_TO_DIGICOD[position][v]
             robot += move
             position = v
-        robot_codes = [x + 'A' for x in robot.split('A')][:-1]
-        move05 = {c: next_move5[c] for c in robot_codes}
-        move10 = {c: next_move5[c] for c in list(set([c for s in move05.values() for c in s]))}
-        move15 = {c: next_move5[c] for c in list(set([c for s in move10.values() for c in s]))}
-        move20 = {c: next_move5[c] for c in list(set([c for s in move15.values() for c in s]))}
-        move25 = {c: next_move5[c] for c in list(set([c for s in move20.values() for c in s]))}
-        length25 = {k: len(''.join(v)) for k, v in move25.items()}
-        length20 = {k: sum([length25[x] for x in v]) for k, v in move20.items()}
-        length15 = {k: sum([length20[x] for x in v]) for k, v in move15.items()}
-        length10 = {k: sum([length15[x] for x in v]) for k, v in move10.items()}
-        length05 = {k: sum([length10[x] for x in v]) for k, v in move05.items()}
-        robots[code] = sum([length05[x] for x in code])
+        last_robot_command = [x + 'A' for x in robot.split('A')][:-1]
+        set_of_codes = list(set(last_robot_command))
+        moves_by_step = []
+        for step in range(steps):
+            moves_by_step += [{c: next_move[c] for c in set_of_codes}]
+            set_of_codes = list(set([c for v in moves_by_step[-1].values() for c in v]))
+        length_of_codes = {k: len(''.join(v)) for k, v in moves_by_step[-1].items()}
+        for step in range(2, steps + 1):
+            length_of_codes = {k: sum([length_of_codes[x] for x in v]) for k, v in moves_by_step[-step].items()}
+        robots[code] = sum([length_of_codes[x] for x in last_robot_command])
         print(f'Robot for code door {code}, length = {robots[code]}')
     return robots
 
@@ -183,8 +179,8 @@ def run(data_dir, star):
 
     if star == 1:  # The final answer is: 132532
         solution = complexity_sum(data)
-    elif star == 2:  # The final answer is: 452913590856 too low
-        solution = complexity_sum(data, 25)
+    elif star == 2:  # The final answer is: 165644591859332
+        solution = sum([int(k[:-1]) * v for k, v in long_chain(data).items()])
     else:
         raise Exception('Star number must be either 1 or 2.')
 
