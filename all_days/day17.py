@@ -66,24 +66,40 @@ def get_value(operand, register):
 
 
 def one_operation(operator, operand, pointer, register):
-    # Je dois passer le literal operand et pas sa valeur, c'est pas toujours la valeur que j'utilise
-    # Je peux pas définir le déplacement, mais la position du pointeur après l'opération !
     output, pointer = None, pointer + 2
     if operator == 0:
+        # The adv instruction (opcode 0) performs division. The numerator is the value in the A register. The
+        # denominator is found by raising 2 to the power of the instruction's combo operand. The result of the division
+        # operation is truncated to an integer and then written to the A register.
         register['A'] = int(register['A'] / (2**get_value(operand, register)))
     elif operator == 1:
-        register['B'] = register['B'] | operand # bitwise XOR
+        # The bxl instruction (opcode 1) calculates the bitwise XOR of register B and the instruction's literal operand,
+        # then stores the result in register B.
+        register['B'] = register['B'] ^ operand
     elif operator == 2:
+        # The bst instruction (opcode 2) calculates the value of its combo operand modulo 8 (thereby keeping only its
+        # lowest 3 bits), then writes that value to the B register.
         register['B'] = get_value(operand, register) % 8
-    elif (operator == 3) & (register['A'] != 0):
-        pointer = operand
+    elif operator == 3:
+        # The jnz instruction (opcode 3) does nothing if the A register is 0. However, if the A register is not zero,
+        # it jumps by setting the instruction pointer to the value of its literal operand; if this instruction jumps,
+        # the instruction pointer is not increased by 2 after this instruction.
+        if register['A'] != 0:
+            pointer = operand
     elif operator == 4:
-        register['B'] = register['B'] | register['C'] # bitwise XOR
+        # The bxc instruction (opcode 4) calculates the bitwise XOR of register B and register C, then stores the result
+        # in register B. (For legacy reasons, this instruction reads an operand but ignores it.)
+        register['B'] = register['B'] ^ register['C']
     elif operator == 5:
-        output = get_value(operand, register) % 8
+        # The out instruction (opcode 5) calculates the value of its combo operand modulo 8, then outputs that value.
+        output = str(get_value(operand, register) % 8)
     elif operator == 6:
+        # The bdv instruction (opcode 6) works exactly like the adv instruction except that the result is stored in the
+        # B register. (The numerator is still read from the A register.)
         register['B'] = int(register['A'] / (2 ** get_value(operand, register)))
     elif operator == 7:
+        # The cdv instruction (opcode 7) works exactly like the adv instruction except that the result is stored in the
+        # C register. (The numerator is still read from the A register.)
         register['C'] = int(register['A'] / (2 ** get_value(operand, register)))
     else:
         raise Exception
@@ -98,16 +114,34 @@ def operate(data):
         register, operation_output, pos = one_operation(operator, operand, pos, register)
         if operation_output:
             output += [operation_output]
-    return ','.join(output)
+    return {'register': register, 'output': ','.join(output)}
+
+
+def get_best_register(data):
+    output = ' '
+    register_a = 90938893795500
+    program_string = ','.join([str(x) for x in data['program']])
+    while output != program_string:
+        register_a = register_a + 1
+        if register_a > 90938893811945:
+            print(register_a)
+        output = operate(
+            {
+                'register': {'A': register_a, 'B': data['register']['B'], 'C': data['register']['C']},
+                'program': data['program']
+            }
+        )['output']
+    return register_a, output
 
 
 def run(data_dir, star):
     data = {'register': {'A': 66171486, 'B': 0, 'C': 0}, 'program': [2, 4, 1, 6, 7, 5, 4, 6, 1, 4, 5, 5, 0, 3, 3, 0]}
 
-    if star == 1:  # The final answer is:
-        solution = my_func(data)
-    elif star == 2:  # The final answer is:
-        solution = my_func(data)
+    if star == 1:  # The final answer is: 2,3,6,2,1,6,1,2,1
+        data['register']['A'] = 90938893811944
+        solution = operate(data)
+    elif star == 2:  # The final answer is: 90938893795561
+        solution = get_best_register(data)
     else:
         raise Exception('Star number must be either 1 or 2.')
 

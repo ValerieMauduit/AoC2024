@@ -13,44 +13,44 @@ def test_sets():
         {
             'number': 1,
             'input': {'register': {'A': None, 'B': None, 'C': 9}, 'program': [2, 6]},
-            'expected1': {'register': {'A': None, 'B': 1, 'C': None}, 'output': None},
+            'expected1': {'register': {'A': None, 'B': 1, 'C': 9}, 'output': ''},
             'expected2': []
         },
         {
             'number': 2,
             'input': {'register': {'A': 10, 'B': None, 'C': None}, 'program': [5, 0, 5, 1, 5, 4]},
-            'expected1': {'register': {'A': None, 'B': None, 'C': None}, 'output': [0, 1, 2]},
+            'expected1': {'register': {'A': 10, 'B': None, 'C': None}, 'output': '0,1,2'},
             'expected2': []
         },
         {
             'number': 3,
             'input': {'register': {'A': 2024, 'B': None, 'C': None}, 'program': [0, 1, 5, 4, 3, 0]},
-            'expected1': {'register': {'A': 0, 'B': None, 'C': None}, 'output': [4, 2, 5, 6, 7, 7, 7, 7, 3, 1, 0]},
+            'expected1': {'register': {'A': 0, 'B': None, 'C': None}, 'output': '4,2,5,6,7,7,7,7,3,1,0'},
             'expected2': []
         },
         {
             'number': 4,
             'input': {'register': {'A': None, 'B': 29, 'C': None}, 'program': [1, 7]},
-            'expected1': {'register': {'A': None, 'B': 26, 'C': None}, 'output': None},
+            'expected1': {'register': {'A': None, 'B': 26, 'C': None}, 'output': ''},
             'expected2': []
         },
         {
             'number': 5,
             'input': {'register': {'A': None, 'B': 2024, 'C': 43690}, 'program': [4, 0]},
-            'expected1': {'register': {'A': None, 'B': 44354, 'C': None}, 'output': None},
+            'expected1': {'register': {'A': None, 'B': 44354, 'C': 43690}, 'output': ''},
             'expected2': []
         },
         {
             'number': 6,
             'input': {'register': {'A': 729, 'B': 0, 'C': 0}, 'program': [0, 1, 5, 4, 3, 0]},
-            'expected1': {'register': {'A': None, 'B': None, 'C': None}, 'output': [4, 6, 3, 5, 6, 3, 5, 2, 1, 0]},
+            'expected1': {'register': {'A': 0, 'B': 0, 'C': 0}, 'output': '4,6,3,5,6,3,5,2,1,0'},
             'expected2': []
         },
     ]
 
 
 def test_first_star(test_data, expected):
-    solution = day00.my_func(test_data)
+    solution = day17.operate(test_data)
     if solution != expected:
         print("Your output is:")
         print(solution)
