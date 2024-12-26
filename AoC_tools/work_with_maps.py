@@ -350,7 +350,7 @@ class AocMap:
         else:
             raise Exception("The direction must be one of the following: R, L, U, D.")
 
-    def get_paths(self, coords, exit_position = None, path=None):
+    def get_paths(self, coords, path=None):
         if not path:
             path = [coords]
         self.set_position(coords)
@@ -359,12 +359,6 @@ class AocMap:
         if accessible_neighbours:
             paths = []
             for n in accessible_neighbours:
-                if exit_position & (n == exit_position):
-                    paths += [[path + [n]]]
-                else:
-                    paths += self.get_paths(n, path + [n])
+                paths += self.get_paths(n, path + [n])
             return paths
-        if ((exit_position is not None) & (path[-1] == exit_position)) | (exit_position is None):
-            return [path]
-        else:
-            return []
+        return [path]
