@@ -29,7 +29,7 @@ def test_first_star(test_data, expected):
 
 
 def test_second_star(test_data, expected):
-    solution = day00.my_func(test_data)
+    solution = day21.long_chain(test_data)
     if solution != expected:
         print("Your output is:")
         print(solution)

@@ -129,20 +129,61 @@ def command_door(code, robots=3):
 
 
 def complexity_sum(codes, robots=3):
-    complexity = [] # 0
+    complexity = 0
     for code in codes:
         print(code)
         complexity += [len(command_door(code, robots))] # int(code[:-1]) * len(command_door(code, robots))
     return complexity
 
 
+def long_chain(codes):
+    # First define the possible results for 5 steps
+    next_move5 = {}
+    for code in set(
+            [v for x in MOVES_TO_DIGICOD.values() for v in x.values()]
+            + [v for x in MOVES_TO_KEYPAD.values() for v in x.values()]
+    ):
+        initial_code = code
+        for count in range(5):
+            position = 'A'
+            new_code = ''
+            for x in code:
+                new_code += MOVES_TO_KEYPAD[position][x]
+                position = x
+            code = new_code
+        next_move5[initial_code] = [x + 'A' for x in code.split('A')][:-1]
+
+    # Then use the 5 steps dict to do it 5 times on each door code
+    robots = {}
+    for code in codes:
+        robot = ''
+        position = 'A'
+        for v in code:
+            move = MOVES_TO_DIGICOD[position][v]
+            robot += move
+            position = v
+        robot_codes = [x + 'A' for x in robot.split('A')][:-1]
+        move05 = {c: next_move5[c] for c in robot_codes}
+        move10 = {c: next_move5[c] for c in list(set([c for s in move05.values() for c in s]))}
+        move15 = {c: next_move5[c] for c in list(set([c for s in move10.values() for c in s]))}
+        move20 = {c: next_move5[c] for c in list(set([c for s in move15.values() for c in s]))}
+        move25 = {c: next_move5[c] for c in list(set([c for s in move20.values() for c in s]))}
+        length25 = {k: len(''.join(v)) for k, v in move25.items()}
+        length20 = {k: sum([length25[x] for x in v]) for k, v in move20.items()}
+        length15 = {k: sum([length20[x] for x in v]) for k, v in move15.items()}
+        length10 = {k: sum([length15[x] for x in v]) for k, v in move10.items()}
+        length05 = {k: sum([length10[x] for x in v]) for k, v in move05.items()}
+        robots[code] = sum([length05[x] for x in code])
+        print(f'Robot for code door {code}, length = {robots[code]}')
+    return robots
+
+
 def run(data_dir, star):
-    # data = ['341A', '480A', '286A', '579A', '149A']
-    data = ['A', '0', '1']
+    data = ['341A', '480A', '286A', '579A', '149A']
 
     if star == 1:  # The final answer is: 132532
         solution = complexity_sum(data)
-    elif star == 2:  # The final answer is:
+    elif star == 2:  # The final answer is: 452913590856 too low
         solution = complexity_sum(data, 25)
     else:
         raise Exception('Star number must be either 1 or 2.')
