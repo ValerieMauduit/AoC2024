@@ -1,5 +1,6 @@
 import itertools
 
+
 def sliding_windows(data, size=3):
     # Returns the list of the sub-lists of a given span in an ordered list
     if type(data) == str:
@@ -56,3 +57,7 @@ def least_common(in_list, values=None):
 
 def merge_lists(list1, list2):
     return [x for x in itertools.chain(*[[list1[n], list2[n]] for n in range(len(list1))])]
+
+
+def transpose(list_of_lists):
+    return [[x[n] for x in list_of_lists] for n in range(len(list_of_lists[0]))]
