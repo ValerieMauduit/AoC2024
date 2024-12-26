@@ -19,7 +19,7 @@ def test_sets():
                 '#.#####.#.###.#', '#.#...#.#.#...#', '#.#.#.#.#.#.###', '#...#...#...###', '###############'
             ],
             'expected1': [84, {2: 14, 4: 14, 6: 2, 8: 4, 10: 2, 12: 3, 20: 1, 36: 1, 38: 1, 40: 1, 64: 1}],
-            'expected2': []
+            'expected2': 285
         },
     ]
 
@@ -41,7 +41,7 @@ def test_first_star(test_data, expected):
 
 
 def test_second_star(test_data, expected):
-    solution = day00.my_func(test_data)
+    solution = day20.count_advanced_cheats(AocMap(test_data), minimum_cheat=50, max_length=20)
     if solution != expected:
         print("Your output is:")
         print(solution)
