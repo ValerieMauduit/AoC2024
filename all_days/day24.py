@@ -9,10 +9,26 @@
 # least significant bit, then z01, then z02, and so on.
 # Simulate the system of gates and wires. What decimal number does it output on the wires starting with z?
 
-# Second star: description
+# Second star: After inspecting the monitoring device more closely, you determine that the system you're simulating is
+# trying to add two binary numbers.
+# Specifically, it is treating the bits on wires starting with x as one binary number, treating the bits on wires
+# starting with y as a second binary number, and then attempting to add those two numbers together. The output of this
+# operation is produced as a binary number on the wires starting with z. (In all three cases, wire 00 is the least
+# significant bit, then 01, then 02, and so on.)
+# The initial values for the wires in your puzzle input represent just one instance of a pair of numbers that sum to the
+# wrong value. Ultimately, any two binary numbers provided as input should be handled correctly. That is, for any
+# combination of bits on wires starting with x and wires starting with y, the sum of the two numbers those bits
+# represent should be produced as a binary number on the wires starting with z.
+# Based on forensic analysis of scuff marks and scratches on the device, you can tell that there are exactly four pairs
+# of gates whose output wires have been swapped. (A gate can only be in at most one such pair; no gate's output was
+# swapped multiple times.)
+# Your system of gates and wires has four pairs of gates which need their output wires swapped - eight wires in total.
+# Determine which four pairs of gates need their outputs swapped so that your system correctly performs addition; what
+# do you get if you sort the names of the eight wires involved in a swap and then join those names with commas?
 
 import os
 import sys
+from datetime import datetime
 current_dir = os.path.dirname(os.path.realpath(__file__))
 parent_dir = os.path.dirname(current_dir)
 sys.path.append(parent_dir)
@@ -26,7 +42,7 @@ def format_data(data):
     return outputs, gates
 
 
-def get_z_outputs(outputs, gates):
+def get_all_outputs(outputs, gates):
     z_outputs_in_gates = [g for g in gates.keys() if g[0] == 'z']
     while len(z_outputs_in_gates) > 0:
         for output, command in gates.items():
@@ -39,11 +55,14 @@ def get_z_outputs(outputs, gates):
                     outputs[output] = outputs[command[0]] ^ outputs[command[2]]
         gates = {k: v for k, v in gates.items() if k not in outputs.keys()}
         z_outputs_in_gates = [g for g in gates.keys() if g[0] == 'z']
-    return {k: v for k, v in outputs.items() if k[0] == 'z'}
+    return outputs
 
 
-def calculate(data):
-    outputs, gates = format_data(data)
+def get_z_outputs(outputs, gates):
+    return {k: v for k, v in get_all_outputs(outputs, gates).items() if k[0] == 'z'}
+
+
+def calculate(outputs, gates):
     z_outputs = get_z_outputs(outputs, gates)
     return sum([int(v) * 2 ** int(k[1:]) for k, v in z_outputs.items()])
 
@@ -54,25 +73,32 @@ def theoretical_result(outputs):
     return x + y
 
 
-def actual_result(outputs):
-    return sum([int(v) * 2 ** int(k[1:]) for k, v in outputs.items() if k[0] == 'z'])
-
-
 def try_four_swaps(data):
     outputs, gates = format_data(data)
-    theo, actual = theoretical_result(outputs), actual_result(outputs)
-    nmax = len(list(gates.keys()))
-    while actual != theo:
-        x = 42
+    theo, actual = bin(theoretical_result(outputs)), bin(calculate(outputs, gates))
+    print(theo)
+    print(actual)
+    gates_bis = gates
+    gates_bis['dnn'] = gates['dqg']
+    gates_bis['dqg'] = gates['dnn']
+    wrong_z_values = []
+    for i in range(len(theo) - 1):
+        if theo[-i] != actual[-i]:
+            wrong_z_values += [f'z{(i - 1):02.0f}']
+    return wrong_z_values
 
 
 def run(data_dir, star):
     data = read_data(f'{data_dir}/input-day24.txt', numbers=False, by_block=True)
 
     if star == 1:  # The final answer is: 48508229772400
-        solution = calculate(data)
+        start = datetime.now()
+        o, g = format_data(data)
+        solution = calculate(o, g)
+        stop = datetime.now()
+        print(stop - start)
     elif star == 2:  # The final answer is:
-        solution = calculate(data)
+        solution = try_four_swaps(data)
     else:
         raise Exception('Star number must be either 1 or 2.')
 
