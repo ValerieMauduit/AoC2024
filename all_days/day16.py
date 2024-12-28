@@ -20,11 +20,14 @@ from AoC_tools.read_data import read_data
 from AoC_tools.work_with_maps import AocMap
 
 
-def reinder_map(data, initial_score=None):
+def calculate_score_map(initial_map, initial_score=None, initial_position=None):
+    reinder = initial_map
     if initial_score is None:
         initial_score = [0, 'H']
-    reinder = AocMap(data)
-    start = [1, reinder.height - 2]
+    if initial_position is None:
+        initial_position = [1, reinder.height - 2]
+
+    start = initial_position
     reinder.set_point(start, initial_score)
     previous_neighbours = [start]
     while len(previous_neighbours) > 0:
@@ -41,7 +44,7 @@ def reinder_map(data, initial_score=None):
                         n1_value = [n0_value[0] + 1, 'V']
                     if n1_value[1] != n0_value[1]:
                         n1_value[0] += 1000
-                    if point_n1_before in ['.', 'E']:
+                    if point_n1_before in ['.', 'E', 'S']:
                         reinder.set_point(n1, n1_value)
                         next_neighbours += [n1]
                     elif point_n1_before[0] > n1_value[0]:
@@ -51,109 +54,63 @@ def reinder_map(data, initial_score=None):
     return reinder
 
 
-def calculate_good_seat(point, score_map, best_seats):
-    good_seat = False
-    previous_neighbours = [point]
-    new_map = AocMap.empty_from_size(score_map.width, score_map.height)
-    new_map.set_point(point, score_map.get_point(point))
-    new_map.set_points(score_map.get_marker_coords('#'), '#')
-    new_map.set_point(point, score_map.get_point(point))
-    while (not good_seat) & (len(previous_neighbours) > 0):
-        next_neighbours = []
-        for n0 in previous_neighbours:
-            new_map.set_position(n0)
-            n0_value = new_map.get_point(n0)
-            input(f'Parent {n0}, value {n0_value}')
-            print(new_map.get_neighbours_coordinates(diagonals=False))
-            for n1 in new_map.get_neighbours_coordinates(diagonals=False):
-                point_n1_before = new_map.get_point(n1)
-                print(f'   neighbour {n1}, value {point_n1_before}')
-                if point_n1_before != '#':
-                    # Set + 1 translation
-                    if n0[0] != n1[0]:
-                        n1_value = [n0_value[0] + 1, 'H']
-                    else:
-                        n1_value = [n0_value[0] + 1, 'V']
-                    # Set rotation score
-                    if n1_value[1] != n0_value[1]:
-                        n1_value[0] += 1000
-                    print(f'   neighbour {n1}, new value {n1_value}')
-                    # Check if arrived of good seat
-                    if best_seats.get_point(n1) == 'O':
-                        print('        back on seat')
-                        print(f'        value in score map {score_map.get_point(n1)}')
-                        if n1_value[0] <= score_map.get_point(n1)[0]:
-                            print('good seat!')
-                            good_seat = True
-                    # Or continue digging in the submap
-                    else:
-                        if point_n1_before in ['.', 'E']:
-                            print('      score is set')
-                            new_map.set_point(n1, n1_value)
-                            next_neighbours += [n1]
-                        elif point_n1_before[0] > n1_value[0]:
-                            print('      score is updated')
-                            new_map.set_point(n1, n1_value)
-                            next_neighbours += [n1]
-            previous_neighbours = next_neighbours
-    return good_seat
-
-
-def get_spots(data):
-    reinder = reinder_map(data)
-    best_seats = AocMap.empty_from_size(reinder.width, reinder.height)
-    walls = reinder.get_marker_coords('#')
+def get_one_best_path(score_map):
+    best_seats = AocMap.empty_from_size(score_map.width, score_map.height)
+    walls = score_map.get_marker_coords('#')
     best_seats.set_points(walls, '#')
 
-    # First get the obvious best path
-    end = [reinder.width - 2, 1]
+    end = [score_map.width - 2, 1]
     previous_neighbours = [end]
     while len(previous_neighbours) > 0:
         next_neighbours = []
         for n0 in previous_neighbours:
-            reinder.set_position(n0)
-            local_score = reinder.get_point(n0)[0]
+            score_map.set_position(n0)
+            local_score = score_map.get_point(n0)[0]
             best_seats.set_point(n0, 'O')
-            for n1 in reinder.get_neighbours_coordinates(diagonals=False):
+            for n1 in score_map.get_neighbours_coordinates(diagonals=False):
                 if (best_seats.get_point(n1) not in ['#', 'O']) & (local_score != 'O'):
-                    if local_score - reinder.get_point(n1)[0] in [1, 1001]:
+                    if local_score - score_map.get_point(n1)[0] in [1, 1001]:
                         next_neighbours += [n1]
         previous_neighbours = next_neighbours
-    best_seats.display()
-    input('...')
+    return best_seats.get_marker_coords('O')
+
+
+def get_spots(data):
+    best_seats_map = AocMap(data)
+    reinder = calculate_score_map(AocMap(data))
+    best_score = reinder.get_point([reinder.width - 2, 1])[0]
+    best_seats_list = get_one_best_path(reinder)
+    best_seats_map.set_points(best_seats_list, 'O')
 
     # Then check the neighbours of the best path to see if they could be in a best path
     neighbourhood = [
-        p
-        for p in best_seats.get_neighbourhood_coordinates(best_seats.get_marker_coords('O'), diagonals=False)
-        if reinder.get_point(p) not in ['S', 'E', '#']
+        pos
+        for pos in best_seats_map.get_neighbourhood_coordinates(best_seats_list, diagonals=False)
+        if best_seats_map.get_point(pos) not in ['S', 'E', '#', 'O']
     ]
-    neighbourhood = [[1, 10]]
     while len(neighbourhood) > 0:
-        print(f'Neighbours: {neighbourhood}')
-        kept_points = []
-        for n0 in neighbourhood:
-            if calculate_good_seat(n0, reinder, best_seats):
-                best_seats.set_point(n0, 'O')
-                kept_points += [n0]
+        for pos in neighbourhood:
+            new_score_map = calculate_score_map(AocMap(data), initial_position=pos, initial_score=reinder.get_point(pos))
+            if new_score_map.get_point([reinder.width - 2, 1])[0] <= best_score:
+                best_seats_list = get_one_best_path(new_score_map)
+                if pos not in best_seats_list:
+                    best_seats_list += [pos]
+                best_seats_map.set_points(best_seats_list, 'O')
             else:
-                best_seats.set_point(n0, '#')
-                reinder.set_point(n0, '#')
+                best_seats_map.set_point(pos, '#')
+        best_seats_list = best_seats_map.get_marker_coords('O')
         neighbourhood = [
-            p
-            for p in reinder.get_neighbourhood_coordinates(kept_points, diagonals=False)
-            if reinder.get_point(p) not in ['S', 'E', '#']
+            pos
+            for pos in best_seats_map.get_neighbourhood_coordinates(best_seats_list, diagonals=False)
+            if best_seats_map.get_point(pos) not in ['S', 'E', '#', 'O']
         ]
-        print(f'Kept points: {kept_points}')
-        best_seats.display()
-        input('...')
 
     # Summarize the result
-    return len(best_seats.get_marker_coords('O'))
+    return len(best_seats_map.get_marker_coords('O'))
 
 
 def reinder_score(data):
-    reinder = reinder_map(data)
+    reinder = calculate_score_map(data)
     return reinder.get_point([reinder.width - 2, 1])[0]
 
 
@@ -161,7 +118,7 @@ def run(data_dir, star):
     data = read_data(f'{data_dir}/input-day16.txt', numbers=False)
 
     if star == 1:  # The final answer is: 102488
-        solution = reinder_score(data)
+        solution = reinder_score(AocMap(data))
     elif star == 2:  # The final answer is:
         solution = get_spots(data)
     else:

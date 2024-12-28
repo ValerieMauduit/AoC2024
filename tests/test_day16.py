@@ -5,6 +5,7 @@ current_dir = os.path.dirname(os.path.realpath(__file__))
 parent_dir = os.path.dirname(current_dir)
 sys.path.append(parent_dir)
 
+from AoC_tools.work_with_maps import AocMap
 from all_days import day16
 
 
@@ -35,7 +36,7 @@ def test_sets():
 
 
 def test_first_star(test_data, expected):
-    solution = day16.reinder_score(test_data)
+    solution = day16.reinder_score(AocMap(test_data))
     if solution != expected:
         print("Your output is:")
         print(solution)
