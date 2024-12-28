@@ -5,7 +5,7 @@ current_dir = os.path.dirname(os.path.realpath(__file__))
 parent_dir = os.path.dirname(current_dir)
 sys.path.append(parent_dir)
 
-from all_days import day00
+from all_days import day16
 
 
 def test_sets():
@@ -18,7 +18,7 @@ def test_sets():
                 '#.#.#.###.#.#.#', '#.....#...#.#.#', '#.###.#.#.#.#.#', '#S..#.....#...#', '###############'
             ],
             'expected1': 7036,
-            'expected2': []
+            'expected2': 45
         },
         {
             'number': 2,
@@ -29,13 +29,13 @@ def test_sets():
                 '#S#.............#', '#################'
             ],
             'expected1': 11048,
-            'expected2': []
+            'expected2': 64
         }
     ]
 
 
 def test_first_star(test_data, expected):
-    solution = day00.my_func(test_data)
+    solution = day16.reinder_score(test_data)
     if solution != expected:
         print("Your output is:")
         print(solution)
@@ -44,7 +44,7 @@ def test_first_star(test_data, expected):
 
 
 def test_second_star(test_data, expected):
-    solution = day00.my_func(test_data)
+    solution = day16.get_spots(test_data)
     if solution != expected:
         print("Your output is:")
         print(solution)

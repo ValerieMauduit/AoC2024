@@ -1,5 +1,5 @@
 import itertools
-
+import numpy as np
 
 class AocMap:
     def __init__(self, data, position=None, origin=None, numbers=False):
@@ -206,6 +206,17 @@ class AocMap:
                        if y != self.y
                    ]
 
+    def get_neighbourhood_coordinates(self, points, diagonals=False):
+        neighbourhood = []
+        base = 10 ** (int(np.log10(self.width)) + 1)
+        for point in points:
+            self.set_position(point)
+            neighbourhood = list(set(
+                neighbourhood + [base * p[0] + p[1] for p in self.get_neighbours_coordinates(diagonals)]
+            ))
+        all_points = [[p // base, p % base] for p in neighbourhood]
+        return [p for p in all_points if p not in points]
+
     def count_neighbours(self, marker, diagonals=True):
         # Method to count a specific value of marker in the neighbourhood of the position.
         # Optional: diagonals can be set to False not to get them in the neighbourhood.
@@ -350,15 +361,18 @@ class AocMap:
         else:
             raise Exception("The direction must be one of the following: R, L, U, D.")
 
-    def get_paths(self, coords, path=None):
+    def get_paths(self, coords, path=None, end=None):
         if not path:
             path = [coords]
+        if end:
+            if coords == end:
+                return [path]
         self.set_position(coords)
         neighbours = self.get_neighbours_coordinates(diagonals=False)
         accessible_neighbours = [n for n in neighbours if (self.get_point(n) != '#') & (n not in path)]
         if accessible_neighbours:
             paths = []
             for n in accessible_neighbours:
-                paths += self.get_paths(n, path + [n])
+                paths += self.get_paths(n, path + [n], end)
             return paths
         return [path]
