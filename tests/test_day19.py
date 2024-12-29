@@ -19,6 +19,15 @@ def test_sets():
             'expected1': 6,
             'expected2': 16
         },
+        {
+            'number': 1,
+            'input': {
+                'towels': ['r', 'wr', 'b', 'g', 'bwu', 'rb', 'gb', 'br', 'bw', 'ur'],
+                'patterns': ['brwrrbr', 'bggr', 'gbbr', 'rrbgbr', 'ubwu', 'bwurrg', 'brgr', 'bbrgwb']
+            },
+            'expected1': 6,
+            'expected2': 21
+        },
     ]
 
 
@@ -32,7 +41,7 @@ def test_first_star(test_data, expected):
 
 
 def test_second_star(test_data, expected):
-    solution = day19.my_func(test_data)
+    solution = day19.count_all_possibilities_for_all_patterns(test_data)
     if solution != expected:
         print("Your output is:")
         print(solution)

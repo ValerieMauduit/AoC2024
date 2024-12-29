@@ -61,3 +61,9 @@ def merge_lists(list1, list2):
 
 def transpose(list_of_lists):
     return [[x[n] for x in list_of_lists] for n in range(len(list_of_lists[0]))]
+
+
+def is_included(compared_list, parent_list):
+    return any(
+        compared_list == parent_list[x:x + len(compared_list)] for x in range(len(parent_list) - len(compared_list) + 1)
+    )

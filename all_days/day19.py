@@ -17,11 +17,14 @@
 
 import os
 import sys
+import re
+
 current_dir = os.path.dirname(os.path.realpath(__file__))
 parent_dir = os.path.dirname(current_dir)
 sys.path.append(parent_dir)
 
 from AoC_tools.read_data import read_data
+from AoC_tools.work_with_dicts import update_dict
 
 
 def indispensable_towels(towels):
@@ -33,7 +36,7 @@ def indispensable_towels(towels):
     return list_of_indispensable
 
 
-def possible_pattern(pattern, towels, lead = ''):
+def possible_pattern(pattern, towels, lead=''):
     if pattern in towels:
         return True
     else:
@@ -58,17 +61,85 @@ def count_possible_patterns(data):
     return count
 
 
-def count_all_possibilities_for_a_pattern(pattern, towels, minimum_towels=None):
-    # Pour chaque pattern, si on peut le faire :
-    # - on enlève une par une chaque serviette utilisée dans la décomposition : est-ce qu'on peut encore le faire avec
-    #   toutes les serviettes indispensables moins celle enlevée ?
-    # - si oui, on continue le process
-    # - normalement à la fin on a toutes les possibilités pour faire le pattern avec des serviettes indispensables
-    #
-    # Pour chaque décomposition, on regarde si on peut faire des assemblages
-    # - étage 1 : pour les serviettes non indispensables, c'est quoi leurs décompositions ?
-    # - étape 2 : recherche des décompositions serviettes et remplacements
-    return 42
+def all_possibilities_for_a_pattern(pattern, towels):
+    pattern_decompositions = [[pattern]]
+    possibilities = []
+    while len(pattern_decompositions) > 0:
+        new_pattern_decompositions = []
+        for decomposition in pattern_decompositions:
+            for towel in towels:
+                if decomposition[-1] == towel:
+                    possibilities += [decomposition]
+                elif decomposition[-1][:len(towel)] == towel:
+                    new_pattern_decompositions += [decomposition[:-1] + [towel, decomposition[-1][len(towel):]]]
+        pattern_decompositions = new_pattern_decompositions
+    return possibilities
+
+
+def recompose(splitted_pattern, towel):
+    joined_towel = '-' + ''.join(towel.split('-')) + '-'
+    count = len(splitted_pattern) - 1
+    patterns = [splitted_pattern]
+    for n in range(count):
+        patterns = (
+                [p[:(2 * n + 1)] + [towel] + p[(2 * n + 1):] for p in patterns]
+                + [p[:(2 * n + 1)] + [joined_towel] + p[(2 * n + 1):] for p in patterns]
+        )
+    return [''.join(p) for p in patterns]
+
+
+def count_splits(indexes, length):
+    indexes = [i + [1] for i in indexes]
+    count = 0
+    while len(indexes) > 0:
+        first_sets = [i for i in indexes if i[0] == 0]
+        next_steps = []
+        for first in first_sets:
+            next_possibilities = [i for i in indexes if i[0] == first[1]]
+            if len(next_possibilities) == 0:
+                if first[1] == length:
+                    count += first[2]
+            else:
+                next_steps += [[0, i[1], first[2]] for i in next_possibilities]
+        if len(next_steps) > 0:
+            second = set([i[1] for i in next_steps])
+            next_steps = [[0, s, sum([i[2] for i in next_steps if i[1] == s])] for s in second]
+            possible_next = [i for i in indexes if i[0] >= min([j[1] for j in next_steps])]
+            if len(possible_next) > 0:
+                indexes = next_steps + possible_next
+            else:
+                indexes = next_steps
+        else:
+            indexes = []
+    return count
+
+
+def count_all_possibilities_for_all_patterns(data):
+    count = 0
+    all_patterns = data['patterns']
+    all_towels = data['towels']
+    for pattern in all_patterns:
+        print(pattern)
+        pattern_dict = {}
+        for towel in all_towels:
+            if towel in pattern:
+                indexes = []
+                for i in range(len(pattern) - len(towel) + 1):
+                    if pattern[i:(i + len(towel))] == towel:
+                        indexes += [i]
+
+                for index in indexes:
+                    pattern_dict = update_dict(pattern_dict, index, len(towel), cumulative=False)
+        indexes = list(pattern_dict.keys())
+        indexes.sort()
+        pattern_indexation = []
+        for i in indexes:
+            for v in pattern_dict[i]:
+                pattern_indexation += [[i, i + v]]
+        local_count = count_splits(pattern_indexation, len(pattern))
+        print(f'    {local_count}')
+        count += local_count
+    return count
 
 
 def run(data_dir, star):
@@ -77,8 +148,8 @@ def run(data_dir, star):
 
     if star == 1:  # The final answer is: 287
         solution = count_possible_patterns(data)
-    elif star == 2:  # The final answer is:
-        solution = my_func(data)
+    elif star == 2:  # The final answer is: 571894474468161
+        solution = count_all_possibilities_for_all_patterns(data)
     else:
         raise Exception('Star number must be either 1 or 2.')
 
