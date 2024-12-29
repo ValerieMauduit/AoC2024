@@ -5,7 +5,7 @@ current_dir = os.path.dirname(os.path.realpath(__file__))
 parent_dir = os.path.dirname(current_dir)
 sys.path.append(parent_dir)
 
-from all_days import day00
+from all_days import day18
 
 
 def test_sets():
@@ -20,14 +20,14 @@ def test_sets():
                 ],
                 6, 12
             ],
-            'expected1': [],
+            'expected1': 22,
             'expected2': []
         },
     ]
 
 
 def test_first_star(test_data, expected):
-    solution = day00.my_func(test_data)
+    solution = day18.exit_map(test_data[0], test_data[1], test_data[2])
     if solution != expected:
         print("Your output is:")
         print(solution)
