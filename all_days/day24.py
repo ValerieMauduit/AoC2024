@@ -39,6 +39,8 @@ from AoC_tools.read_data import read_data
 def format_data(data):
     outputs = {x.split(': ')[0]: bool(int(x.split(': ')[1])) for x in data[0]}
     gates = {x.split(' -> ')[1]: x.split(' -> ')[0].split(' ') for x in data[1]}
+    print(outputs)
+    print(gates)
     return outputs, gates
 
 
@@ -74,18 +76,29 @@ def theoretical_result(outputs):
 
 
 def try_four_swaps(data):
-    outputs, gates = format_data(data)
-    theo, actual = bin(theoretical_result(outputs)), bin(calculate(outputs, gates))
-    print(theo)
-    print(actual)
-    gates_bis = gates
-    gates_bis['dnn'] = gates['dqg']
-    gates_bis['dqg'] = gates['dnn']
-    wrong_z_values = []
-    for i in range(len(theo) - 1):
-        if theo[-i] != actual[-i]:
-            wrong_z_values += [f'z{(i - 1):02.0f}']
-    return wrong_z_values
+    o, g = format_data(data)
+    # Si on veut tester les additions qui ne marchent pas
+    # for k in o.keys():
+    #     if k[0] in ['x', 'y']:
+    #         o[k] = False
+    #     if k in ['x01', 'x00', 'y01']:
+    #         o[k] = True
+    all_results = get_all_outputs(o, g)
+    # Si on veut tester les outputs qui posent problème
+    theo = theoretical_result(o)
+    original = calculate(o, g)
+    for code in o.keys():
+        if code[0] not in ['y', 'x', 'z']:
+            print(code)
+            changed_outputs = o
+            changed_outputs[code] = not code
+            changed_gates = g
+            changed_gates.pop(code, None)
+            print(f'Theo:   {bin(theo)}')
+            print(f'Orig:   {bin(original)}')
+            print(f'Actual: {bin(calculate(changed_outputs, changed_gates))}')
+            input('...')
+    return 'OK boomer'
 
 
 def run(data_dir, star):
