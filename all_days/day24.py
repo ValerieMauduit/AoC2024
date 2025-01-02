@@ -39,8 +39,6 @@ from AoC_tools.read_data import read_data
 def format_data(data):
     outputs = {x.split(': ')[0]: bool(int(x.split(': ')[1])) for x in data[0]}
     gates = {x.split(' -> ')[1]: x.split(' -> ')[0].split(' ') for x in data[1]}
-    print(outputs)
-    print(gates)
     return outputs, gates
 
 
@@ -57,6 +55,8 @@ def get_all_outputs(outputs, gates):
                     outputs[output] = outputs[command[0]] ^ outputs[command[2]]
         gates = {k: v for k, v in gates.items() if k not in outputs.keys()}
         z_outputs_in_gates = [g for g in gates.keys() if g[0] == 'z']
+    # print(outputs)
+    # print('=' * 84)
     return outputs
 
 
@@ -77,27 +77,34 @@ def theoretical_result(outputs):
 
 def try_four_swaps(data):
     o, g = format_data(data)
-    # Si on veut tester les additions qui ne marchent pas
-    # for k in o.keys():
-    #     if k[0] in ['x', 'y']:
-    #         o[k] = False
-    #     if k in ['x01', 'x00', 'y01']:
-    #         o[k] = True
-    all_results = get_all_outputs(o, g)
+    # swaps
+    tempo = g['z15']
+    g['z15'] = g['qnw']
+    g['qnw'] = tempo
+
+    tempo = g['ncd']
+    g ['ncd'] = g['nfj']
+    g['nfj'] = tempo
+
+    tempo = g['z20']
+    g['z20'] = g['cqr']
+    g['cqr'] = tempo
+
+    tempo = g['z37']
+    g['z37'] = g['vkg']
+    g['vkg'] = tempo
+
+    # all_results = get_all_outputs(o, g)
     # Si on veut tester les outputs qui posent problème
     theo = theoretical_result(o)
     original = calculate(o, g)
-    for code in o.keys():
-        if code[0] not in ['y', 'x', 'z']:
-            print(code)
-            changed_outputs = o
-            changed_outputs[code] = not code
-            changed_gates = g
-            changed_gates.pop(code, None)
-            print(f'Theo:   {bin(theo)}')
-            print(f'Orig:   {bin(original)}')
-            print(f'Actual: {bin(calculate(changed_outputs, changed_gates))}')
-            input('...')
+    print(f'Theo:   {bin(theo)}')
+    print(f'Orig:   {bin(original)}')
+
+    for i in range(46):
+        if bin(theo)[47 - i] != bin(original)[47 -i]:
+            print(f'z{i:02.0f} false')
+
     return 'OK boomer'
 
 
