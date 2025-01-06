@@ -42,7 +42,8 @@
 # Using the information provided by the debugger, initialize the registers to the given values, then run the program.
 # Once it halts, what do you get if you use commas to join the values it output into a single string?
 
-# Second star: description
+# Second star: What is the lowest positive initial value for register A that causes the program to output a copy of
+# itself?
 
 import os
 import sys

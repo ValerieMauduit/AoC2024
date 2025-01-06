@@ -121,7 +121,7 @@ def run(data_dir, star):
 
     if star == 1:  # The final answer is: 219512160
         solution = safety_result(data)
-    elif star == 2:  # The final answer is:
+    elif star == 2:  # The final answer is: 6398
         solution = find_rectangle(data)
     else:
         raise Exception('Star number must be either 1 or 2.')

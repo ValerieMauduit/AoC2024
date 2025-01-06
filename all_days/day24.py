@@ -94,6 +94,9 @@ def try_four_swaps(data):
     g['z37'] = g['vkg']
     g['vkg'] = tempo
 
+    solution = ['z15', 'qnw', 'ncd', 'nfj', 'z20', 'cqr', 'z37', 'vkg']
+    solution.sort()
+
     # all_results = get_all_outputs(o, g)
     # Si on veut tester les outputs qui posent problème
     theo = theoretical_result(o)
@@ -105,7 +108,7 @@ def try_four_swaps(data):
         if bin(theo)[47 - i] != bin(original)[47 -i]:
             print(f'z{i:02.0f} false')
 
-    return 'OK boomer'
+    return ','.join(solution)
 
 
 def run(data_dir, star):
@@ -117,7 +120,7 @@ def run(data_dir, star):
         solution = calculate(o, g)
         stop = datetime.now()
         print(stop - start)
-    elif star == 2:  # The final answer is:
+    elif star == 2:  # The final answer is: cqr,ncd,nfj,qnw,vkg,z15,z20,z37
         solution = try_four_swaps(data)
     else:
         raise Exception('Star number must be either 1 or 2.')
