@@ -13,7 +13,7 @@
 # column the sum of the lock height and key height is more than the available space.
 # Analyze your lock and key schematics. How many unique lock/key pairs fit together without overlapping in any column?
 
-# Second star: description
+# Second star: No second star, it is "just" having all the previous ones.
 
 import os
 import sys
@@ -51,8 +51,6 @@ def run(data_dir, star):
 
     if star == 1:  # The final answer is: 3021
         solution = fitting_doors_and_keys(data)
-    elif star == 2:  # The final answer is:
-        solution = my_func(data)
     else:
         raise Exception('Star number must be either 1 or 2.')
 

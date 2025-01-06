@@ -63,10 +63,9 @@ def count_new_obstructions(data):
 def run(data_dir, star):
     data = read_data(f'{data_dir}/input-day06.txt', numbers=False)
 
-
     if star == 1:  # The final answer is: 4964
         solution = count_guard_displacement(data)
-    elif star == 2:  # The final answer is:
+    elif star == 2:  # The final answer is: 1740
         solution = count_new_obstructions(data)
     else:
         raise Exception('Star number must be either 1 or 2.')

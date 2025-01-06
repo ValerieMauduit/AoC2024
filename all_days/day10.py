@@ -11,7 +11,8 @@
 # The reindeer gleefully carries over a protractor and adds it to the pile. What is the sum of the scores of all
 # trailheads on your topographic map?
 
-# Second star: description
+# Second star: A trailhead's rating is the number of distinct hiking trails which begin at that trailhead.
+# What is the sum of the ratings of all trailheads?
 
 import os
 import sys
@@ -67,7 +68,7 @@ def run(data_dir, star):
 
     if star == 1:  # The final answer is: 629
         solution = count_paths(topographic_map)
-    elif star == 2:  # The final answer is:
+    elif star == 2:  # The final answer is: 1242
         solution = count_paths(topographic_map, with_variants=True)
     else:
         raise Exception('Star number must be either 1 or 2.')
